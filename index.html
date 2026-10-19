@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en" x-data="app">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ganzan Poultry - Premium Chickens</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-green-700 text-white shadow-lg sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex flex-wrap items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-drumstick-bite text-2xl"></i>
+                    <h1 class="text-xl md:text-2xl font-bold">Ganzan Poultry</h1>
+                </div>
+                <button @click="mobileMenu = !mobileMenu" class="md:hidden text-white focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div class="hidden md:flex items-center space-x-6">
+                    <button @click="showPage('home')" class="hover:text-green-200 transition" :class="currentPage === 'home' ? 'border-b-2 border-white' : ''">Home</button>
+                    <button @click="showPage('products')" class="hover:text-green-200 transition" :class="currentPage === 'products' ? 'border-b-2 border-white' : ''">Shop</button>
+                    <button @click="showPage('cart')" class="hover:text-green-200 transition flex items-center" :class="currentPage === 'cart' ? 'border-b-2 border-white' : ''">
+                        <i class="fas fa-shopping-cart mr-1"></i> Cart 
+                        <span x-show="cartItems.length > 0" class="ml-2 bg-red-500 text-white text-xs rounded-full px-2 py-0.5" x-text="cartItems.length"></span>
+                    </button>
+                    <button @click="showPage('admin')" class="hover:text-green-200 transition" :class="currentPage === 'admin' ? 'border-b-2 border-white' : ''">
+                        <i class="fas fa-user-shield mr-1"></i> Admin
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile Menu -->
+            <div x-show="mobileMenu" x-cloak class="md:hidden mt-3 space-y-2">
+                <button @click="showPage('home'); mobileMenu=false" class="block w-full text-left py-2 hover:bg-green-600 rounded px-2">Home</button>
+                <button @click="showPage('products'); mobileMenu=false" class="block w-full text-left py-2 hover:bg-green-600 rounded px-2">Shop</button>
+                <button @click="showPage('cart'); mobileMenu=false" class="block w-full text-left py-2 hover:bg-green-600 rounded px-2 flex items-center justify-between">
+                    <span><i class="fas fa-shopping-cart mr-1"></i> Cart</span>
+                    <span x-show="cartItems.length > 0" class="bg-red-500 text-white text-xs rounded-full px-2 py-0.5" x-text="cartItems.length"></span>
+                </button>
+                <button @click="showPage('admin'); mobileMenu=false" class="block w-full text-left py-2 hover:bg-green-600 rounded px-2">
+                    <i class="fas fa-user-shield mr-1"></i> Admin
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Page -->
+    <div x-show="currentPage === 'home'" x-cloak>
+        <!-- Hero Banner -->
+        <section class="bg-gradient-to-r from-green-600 to-green-800 text-white py-12 md:py-20">
+            <div class="container mx-auto px-4 text-center">
+                <h2 class="text-3xl md:text-5xl font-bold mb-4">Premium Poultry Chickens</h2>
+                <p class="text-lg md:text-xl mb-6">Quality breeds raised with care for your farming needs</p>
+                <button @click="showPage('products')" class="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-8 rounded-full transition text-lg">
+                    Shop Now <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- Benefits Section -->
+        <section class="py-12 bg-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 text-gray-800">Why Choose Us</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center p-6 bg-green-50 rounded-lg shadow-md">
+                        <i class="fas fa-shield-alt text-4xl text-green-700 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2 text-gray-800">Vaccinated & Healthy</h3>
+                        <p class="text-gray-600">All chickens are properly vaccinated and raised under hygienic conditions</p>
+                    </div>
+                    <div class="text-center p-6 bg-green-50 rounded-lg shadow-md">
+                        <i class="fas fa-weight text-4xl text-green-700 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2 text-gray-800">Quality Breeds</h3>
+                        <p class="text-gray-600">Premium breeds with optimal growth and excellent characteristics</p>
+                    </div>
+                    <div class="text-center p-6 bg-green-50 rounded-lg shadow-md">
+                        <i class="fas fa-truck text-4xl text-green-700 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2 text-gray-800">Reliable Supply</h3>
+                        <p class="text-gray-600">Consistent inventory with age-categorized selections</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Chickens -->
+        <section class="py-12 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 text-gray-800">Featured Chickens</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <template x-for="chicken in featuredChickens" :key="chicken.id">
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+                            <div class="bg-green-100 h-48 flex items-center justify-center">
+                                <i class="fas fa-feather text-6xl text-green-700"></i>
+                            </div>
+                            <div class="p-4">
+                                <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mb-2" x-text="chicken.age + ' months'"></span>
+                                <h3 class="text-xl font-bold text-gray-800 mb-1" x-text="chicken.breed"></h3>
+                                <p class="text-gray-600 text-sm mb-2" x-text="chicken.description.substring(0, 60) + '...'"></p>
+                                <div class="flex justify-between items-center mb-3">
+                                    <span class="text-2xl font-bold text-green-700">$<span x-text="chicken.price"></span></span>
+                                    <span class="text-sm px-2 py-1 rounded" :class="chicken.stock > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'" x-text="chicken.stock > 0 ? 'In Stock (' + chicken.stock + ')' : 'Out of Stock'"></span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button @click="viewDetails(chicken)" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded transition text-sm">
+                                        <i class="fas fa-info-circle mr-1"></i> Details
+                                    </button>
+                                    <button @click="addToCart(chicken)" :disabled="chicken.stock <= 0" class="flex-1 bg-green-700 hover:bg-green-800 text-white py-2 rounded transition text-sm disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                        <i class="fas fa-cart-plus mr-1"></i> Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <div class="text-center mt-8">
+                    <button @click="showPage('products')" class="bg-green-700 hover:bg-green-800 text-white font-bold py-3 px-8 rounded-full transition">
+                        View All Products
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Products Page -->
+    <div x-show="currentPage === 'products'" x-cloak class="py-8">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Our Chickens</h2>
+            
+            <!-- Age Filter -->
+            <div class="mb-6 bg-white p-4 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold mb-3 text-gray-800">Filter by Age</h3>
+                <div class="flex flex-wrap gap-2">
+                    <button @click="selectedAgeFilter = 'all'" class="px-4 py-2 rounded transition" :class="selectedAgeFilter === 'all' ? 'bg-green-700 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'">
+                        All Ages
+                    </button>
+                    <button @click="selectedAgeFilter = '4'" class="px-4 py-2 rounded transition" :class="selectedAgeFilter === '4' ? 'bg-green-700 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'">
+                        4 Months
+                    </button>
+                    <button @click="selectedAgeFilter = '5'" class="px-4 py-2 rounded transition" :class="selectedAgeFilter === '5' ? 'bg-green-700 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'">
+                        5 Months
+                    </button>
+                    <button @click="selectedAgeFilter = '6+'" class="px-4 py-2 rounded transition" :class="selectedAgeFilter === '6+' ? 'bg-green-700 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800'">
+                        6+ Months
+                    </button>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <template x-for="chicken in filteredChickens" :key="chicken.id">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+                        <div class="bg-green-100 h-40 flex items-center justify-center">
+                            <i class="fas fa-feather text-5xl text-green-700"></i>
+                        </div>
+                        <div class="p-4">
+                            <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mb-2" x-text="chicken.age + ' months'"></span>
+                            <h3 class="text-lg font-bold text-gray-800 mb-1" x-text="chicken.breed"></h3>
+                            <p class="text-gray-600 text-xs mb-2" x-text="chicken.description.substring(0, 50) + '...'"></p>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xl font-bold text-green-700">$<span x-text="chicken.price"></span></span>
+                            </div>
+                            <div class="mb-3">
+                                <span class="text-xs px-2 py-0.5 rounded" :class="chicken.stock > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'" x-text="chicken.stock > 0 ? 'In Stock (' + chicken.stock + ')' : 'Out of Stock'"></span>
+                            </div>
+                            <div class="flex gap-1 text-xs">
+                                <button @click="viewDetails(chicken)" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-1.5 rounded transition">
+                                    <i class="fas fa-info-circle"></i> Details
+                                </button>
+                                <button @click="addToCart(chicken)" :disabled="chicken.stock <= 0" class="flex-1 bg-green-700 hover:bg-green-800 text-white py-1.5 rounded transition disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                    <i class="fas fa-cart-plus"></i> Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            <div x-show="filteredChickens.length === 0" class="text-center py-12 text-gray-600">
+                No chickens found matching the selected filter.
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Page -->
+    <div x-show="currentPage === 'cart'" x-cloak class="py-8">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Shopping Cart</h2>
+            
+            <div x-show="cartItems.length === 0" class="text-center py-12 bg-white rounded-lg shadow-md">
+                <i class="fas fa-shopping-cart text-6xl text-gray-400 mb-4"></i>
+                <p class="text-gray-600 text-lg">Your cart is empty</p>
+                <button @click="showPage('products')" class="mt-4 bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-6 rounded transition">
+                    Continue Shopping
+                </button>
+            </div>
+
+            <div x-show="cartItems.length > 0" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-white rounded-lg shadow-md overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Product</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Price</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Quantity</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Total</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="item in cartItems" :key="item.id">
+                                <tr class="border-t">
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center">
+                                            <div class="bg-green-100 w-12 h-12 rounded flex items-center justify-center mr-3">
+                                                <i class="fas fa-feather text-green-700"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-gray-800" x-text="item.breed"></p>
+                                                <p class="text-xs text-gray-600" x-text="item.age + ' months'"></p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4 text-gray-800">$<span x-text="item.price"></span></td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center space-x-2">
+                                            <button @click="decreaseQty(item)" class="bg-gray-200 hover:bg-gray-300 w-6 h-6 rounded">-</button>
+                                            <span x-text="item.quantity"></span>
+                                            <button @click="increaseQty(item)" class="bg-gray-200 hover:bg-gray-300 w-6 h-6 rounded" :disabled="item.quantity >= item.stock">+</button>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4 font-semibold text-gray-800">$<span x-text="(item.price * item.quantity).toFixed(2)"></span></td>
+                                    <td class="py-3 px-4">
+                                        <button @click="removeFromCart(item)" class="text-red-600 hover:text-red-800">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 h-fit">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Order Summary</h3>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-600">Subtotal</span>
+                        <span class="text-gray-800 font-semibold">$<span x-text="cartTotal.toFixed(2)"></span></span>
+                    </div>
+                    <div class="border-t pt-4 mt-4">
+                        <div class="flex justify-between mb-4">
+                            <span class="text-xl font-bold text-gray-800">Total</span>
+                            <span class="text-xl font-bold text-green-700">$<span x-text="cartTotal.toFixed(2)"></span></span>
+                        </div>
+                        <button @click="checkout" class="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded transition">
+                            Checkout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div x-show="currentPage === 'admin'" x-cloak class="py-8">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800">Admin Dashboard</h2>
+
+            <!-- Admin Metrics -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Total Listings</p>
+                            <p class="text-3xl font-bold text-gray-800" x-text="chickens.length"></p>
+                        </div>
+                        <div class="bg-blue-100 p-3 rounded-full">
+                            <i class="fas fa-list text-blue-700 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Live Stock</p>
+                            <p class="text-3xl font-bold text-gray-800" x-text="totalStock"></p>
+                        </div>
+                        <div class="bg-green-100 p-3 rounded-full">
+                            <i class="fas fa-boxes text-green-700 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm">Low Stock Alert</p>
+                            <p class="text-3xl font-bold text-red-600" x-text="lowStockCount"></p>
+                        </div>
+                        <div class="bg-red-100 p-3 rounded-full">
+                            <i class="fas fa-exclamation-triangle text-red-700 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Tabs -->
+            <div x-data="{ activeTab: 'list' }" class="bg-white rounded-lg shadow-md">
+                <div class="flex flex-wrap border-b">
+                    <button @click="activeTab = 'list'" class="px-6 py-3 font-semibold transition" :class="activeTab === 'list' ? 'border-b-2 border-green-700 text-green-700' : 'text-gray-600 hover:text-gray-800'">
+                        Manage Listings
+                    </button>
+                    <button @click="activeTab = 'add'" class="px-6 py-3 font-semibold transition" :class="activeTab === 'add' ? 'border-b-2 border-green-700 text-green-700' : 'text-gray-600 hover:text-gray-800'">
+                        Add New Chicken
+                    </button>
+                </div>
+
+                <!-- Manage Listings Tab -->
+                <div x-show="activeTab === 'list'" class="p-4 overflow-x-auto">
+                    <table class="w-full min-w-[600px]">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Breed</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Age</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Price</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Stock</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="chicken in chickens" :key="chicken.id">
+                                <tr class="border-t">
+                                    <td class="py-3 px-4 text-gray-800" x-text="chicken.breed"></td>
+                                    <td class="py-3 px-4 text-gray-800" x-text="chicken.age + ' months'"></td>
+                                    <td class="py-3 px-4">
+                                        <input type="number" x-model.number="chicken.price" @change="saveToLocalStorage()" step="0.01" class="w-20 px-2 py-1 border rounded">
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <input type="number" x-model.number="chicken.stock" @change="saveToLocalStorage()" min="0" class="w-20 px-2 py-1 border rounded">
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <button @click="editListing(chicken)" class="text-blue-600 hover:text-blue-800 mr-3" title="Edit Description">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button @click="deleteChicken(chicken)" class="text-red-600 hover:text-red-800" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Add New Chicken Tab -->
+                <div x-show="activeTab === 'add'" class="p-6">
+                    <form @submit.prevent="addChicken()">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Breed *</label>
+                                <input type="text" x-model="newChicken.breed" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-600">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Age (months) *</label>
+                                <select x-model.number="newChicken.age" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-600">
+                                    <option value="">Select Age</option>
+                                    <option value="4">4 months</option>
+                                    <option value="5">5 months</option>
+                                    <option value="6">6+ months</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Price ($) *</label>
+                                <input type="number" x-model.number="newChicken.price" step="0.01" min="0" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-600">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Stock (Inventory) *</label>
+                                <input type="number" x-model.number="newChicken.stock" min="0" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-600">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Average Weight (kg)</label>
+                                <input type="text" x-model="newChicken.weight" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-600">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-semibold mb-2">Vaccination Status</label>
+                                <select x-model="newChicken.vaccination" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-600">
+                                    <option value="Fully Vaccinated">Fully Vaccinated</option>
+                                    <option value="Partially Vaccinated">Partially Vaccinated</option>
+                                    <option value="Not Vaccinated">Not Vaccinated</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-gray-700 font-semibold mb-2">Short Description *</label>
+                                <input type="text" x-model="newChicken.description" required class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-600">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-gray-700 font-semibold mb-2">Characteristics</label>
+                                <textarea x-model="newChicken.characteristics" rows="3" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-600"></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="mt-4 bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-6 rounded transition">
+                            Add Chicken
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Details Modal -->
+    <div x-show="showModal" x-cloak @click="showModal = false" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div @click.stop class="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="bg-green-700 text-white p-4 rounded-t-lg flex justify-between items-center">
+                <h3 class="text-xl font-bold">Chicken Details</h3>
+                <button @click="showModal = false" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div class="bg-green-100 h-40 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-feather text-5xl text-green-700"></i>
+                </div>
+                <div class="space-y-3">
+                    <div>
+                        <span class="font-semibold text-gray-700">Breed:</span>
+                        <span class="text-gray-800" x-text="selectedChicken.breed"></span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-700">Age:</span>
+                        <span class="text-gray-800" x-text="selectedChicken.age + ' months old'"></span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-700">Average Weight:</span>
+                        <span class="text-gray-800" x-text="selectedChicken.weight || 'Not specified'"></span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-700">Price:</span>
+                        <span class="text-green-700 font-bold" x-text="'$' + selectedChicken.price"></span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-700">Availability:</span>
+                        <span class="px-2 py-0.5 rounded text-sm" :class="selectedChicken.stock > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'" x-text="selectedChicken.stock > 0 ? 'In Stock (' + selectedChicken.stock + ' units)' : 'Out of Stock'"></span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-700">Vaccination Status:</span>
+                        <span class="text-gray-800" x-text="selectedChicken.vaccination || 'Not specified'"></span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-700">Description:</span>
+                        <p class="text-gray-800 mt-1" x-text="selectedChicken.description"></p>
+                    </div>
+                    <div x-show="selectedChicken.characteristics">
+                        <span class="font-semibold text-gray-700">Characteristics:</span>
+                        <p class="text-gray-800 mt-1" x-text="selectedChicken.characteristics"></p>
+                    </div>
+                </div>
+                <div class="mt-6 flex gap-3">
+                    <button @click="showModal = false" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded transition">
+                        Close
+                    </button>
+                    <button @click="addToCart(selectedChicken); showModal = false" :disabled="selectedChicken.stock <= 0" class="flex-1 bg-green-700 hover:bg-green-800 text-white py-2 rounded transition disabled:bg-gray-400 disabled:cursor-not-allowed">
+                        <i class="fas fa-cart-plus mr-1"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Description Modal -->
+    <div x-show="showEditModal" x-cloak @click="showEditModal = false" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div @click.stop class="bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="bg-blue-700 text-white p-4 rounded-t-lg flex justify-between items-center">
+                <h3 class="text-xl font-bold">Edit Description</h3>
+                <button @click="showEditModal = false" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <label class="block text-gray-700 font-semibold mb-2">Description</label>
+                <textarea x-model="editingChicken.description" rows="4" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+                <div class="mt-6 flex gap-3">
+                    <button @click="showEditModal = false" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded transition">
+                        Cancel
+                    </button>
+                    <button @click="saveEdit(); showEditModal = false" class="flex-1 bg-blue-700 hover:bg-blue-800 text-white py-2 rounded transition">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alpine.js Data & Logic -->
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('app', () => ({
+                // Navigation & Pages
+                currentPage: 'home',
+                mobileMenu: false,
+                showPage(page) {
+                    this.currentPage = page;
+                    this.mobileMenu = false;
+                },
+
+                // Products Data
+                chickens: JSON.parse(localStorage.getItem('chickens')) || [
+                    {
+                        id: 1,
+                        breed: 'Rhode Island Red',
+                        age: 4,
+                        price: 25.00,
+                        stock: 15,
+                        description: 'Hardy dual-purpose breed, excellent egg layers and meat producers.',
+                        weight: '2.5 kg',
+                        vaccination: 'Fully Vaccinated',
+                        characteristics: 'Red feathers, docile temperament, high productivity'
+                    },
+                    {
+                        id: 2,
+                        breed: 'Leghorn',
+                        age: 5,
+                        price: 30.00,
+                        stock: 8,
+                        description: 'Prolific white egg layers with efficient feed conversion.',
+                        weight: '2.0 kg',
+                        vaccination: 'Fully Vaccinated',
+                        characteristics: 'White feathers, active, excellent layer'
+                    },
+                    {
+                        id: 3,
+                        breed: 'Cornish Cross',
+                        age: 6,
+                        price: 35.00,
+                        stock: 5,
+                        description: 'Fast growing meat bird with broad breast and tender meat.',
+                        weight: '3.5 kg',
+                        vaccination: 'Fully Vaccinated',
+                        characteristics: 'White feathers, muscular build, rapid growth'
+                    },
+                    {
+                        id: 4,
+                        breed: 'Plymouth Rock',
+                        age: 4,
+                        price: 28.00,
+                        stock: 12,
+                        description: 'Dual-purpose heritage breed known for hardiness and reliability.',
+                        weight: '2.7 kg',
+                        vaccination: 'Fully Vaccinated',
+                        characteristics: 'Barred feathers, friendly, cold hardy'
+                    },
+                    {
+                        id: 5,
+                        breed: 'Sussex',
+                        age: 5,
+                        price: 32.00,
+                        stock: 3,
+                        description: 'Gentle dual-purpose breed with beautiful plumage and good meat quality.',
+                        weight: '2.8 kg',
+                        vaccination: 'Fully Vaccinated',
+                        characteristics: 'Speckled feathers, calm, good forager'
+                    },
+                    {
+                        id: 6,
+                        breed: 'Wyandotte',
+                        age: 6,
+                        price: 34.00,
+                        stock: 10,
+                        description: 'Attractive breed with good egg production and flavorful meat.',
+                        weight: '2.9 kg',
+                        vaccination: 'Fully Vaccinated',
+                        characteristics: 'Laced feathers, docile, winter hardy'
+                    }
+                ],
+
+                // Cart
+                cartItems: JSON.parse(localStorage.getItem('cartItems')) || [],
+
+                // Modal
+                showModal: false,
+                selectedChicken: {},
+
+                // Edit Modal
+                showEditModal: false,
+                editingChicken: {},
+
+                // Filters
+                selectedAgeFilter: 'all',
+
+                // New Chicken Form
+                newChicken: {
+                    breed: '',
+                    age: '',
+                    price: '',
+                    stock: '',
+                    description: '',
+                    weight: '',
+                    vaccination: 'Fully Vaccinated',
+                    characteristics: ''
+                },
+
+                // Computed Properties
+                get featuredChickens() {
+                    return this.chickens.slice(0, 3);
+                },
+
+                get filteredChickens() {
+                    if (this.selectedAgeFilter === 'all') {
+                        return this.chickens;
+                    } else if (this.selectedAgeFilter === '6+') {
+                        return this.chickens.filter(c => c.age >= 6);
+                    } else {
+                        return this.chickens.filter(c => c.age == this.selectedAgeFilter);
+                    }
+                },
+
+                get totalStock() {
+                    return this.chickens.reduce((sum, c) => sum + (c.stock || 0), 0);
+                },
+
+                get lowStockCount() {
+                    return this.chickens.filter(c => c.stock > 0 && c.stock < 5).length;
+                },
+
+                get cartTotal() {
+                    return this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                },
+
+                // Methods
+                viewDetails(chicken) {
+                    this.selectedChicken = chicken;
+                    this.showModal = true;
+                },
+
+                addToCart(chicken) {
+                    // Check if already in cart
+                    const existing = this.cartItems.find(item => item.id === chicken.id);
+                    if (existing) {
+                        if (existing.quantity < chicken.stock) {
+                            existing.quantity++;
+                            this.saveCartToLocalStorage();
+                        } else {
+                            alert('Not enough stock available');
+                        }
+                    } else {
+                        this.cartItems.push({
+                            ...chicken,
+                            quantity: 1
+                        });
+                        this.saveCartToLocalStorage();
+                    }
+                },
+
+                removeFromCart(item) {
+                    this.cartItems = this.cartItems.filter(i => i.id !== item.id);
+                    this.saveCartToLocalStorage();
+                },
+
+                increaseQty(item) {
+                    if (item.quantity < item.stock) {
+                        item.quantity++;
+                        this.saveCartToLocalStorage();
+                    }
+                },
+
+                decreaseQty(item) {
+                    item.quantity--;
+                    if (item.quantity <= 0) {
+                        this.removeFromCart(item);
+                    } else {
+                        this.saveCartToLocalStorage();
+                    }
+                },
+
+                checkout() {
+                    if (this.cartItems.length > 0) {
+                        // Deduct stock
+                        this.cartItems.forEach(cartItem => {
+                            const chicken = this.chickens.find(c => c.id === cartItem.id);
+                            if (chicken) {
+                                chicken.stock -= cartItem.quantity;
+                            }
+                        });
+                        alert('Checkout successful! Thank you for your purchase.');
+                        this.cartItems = [];
+                        this.saveToLocalStorage();
+                        this.saveCartToLocalStorage();
+                        this.showPage('home');
+                    }
+                },
+
+                addChicken() {
+                    // Validate
+                    if (!this.newChicken.breed || !this.newChicken.age || !this.newChicken.price || !this.newChicken.stock || !this.newChicken.description) {
+                        alert('Please fill in all required fields');
+                        return;
+                    }
+                    const newId = Math.max(0, ...this.chickens.map(c => c.id)) + 1;
+                    this.chickens.push({
+                        id: newId,
+                        breed: this.newChicken.breed,
+                        age: parseInt(this.newChicken.age),
+                        price: parseFloat(this.newChicken.price),
+                        stock: parseInt(this.newChicken.stock),
+                        description: this.newChicken.description,
+                        weight: this.newChicken.weight,
+                        vaccination: this.newChicken.vaccination,
+                        characteristics: this.newChicken.characteristics
+                    });
+                    this.saveToLocalStorage();
+                    // Reset form
+                    this.newChicken = {
+                        breed: '',
+                        age: '',
+                        price: '',
+                        stock: '',
+                        description: '',
+                        weight: '',
+                        vaccination: 'Fully Vaccinated',
+                        characteristics: ''
+                    };
+                    alert('Chicken listing added successfully!');
+                },
+
+                editListing(chicken) {
+                    this.editingChicken = {...chicken};
+                    this.showEditModal = true;
+                },
+
+                saveEdit() {
+                    const idx = this.chickens.findIndex(c => c.id === this.editingChicken.id);
+                    if (idx !== -1) {
+                        this.chickens[idx] = {...this.editingChicken};
+                        this.saveToLocalStorage();
+                    }
+                },
+
+                deleteChicken(chicken) {
+                    if (confirm('Are you sure you want to delete this chicken listing?')) {
+                        this.chickens = this.chickens.filter(c => c.id !== chicken.id);
+                        this.saveToLocalStorage();
+                    }
+                },
+
+                saveToLocalStorage() {
+                    localStorage.setItem('chickens', JSON.stringify(this.chickens));
+                },
+
+                saveCartToLocalStorage() {
+                    localStorage.setItem('cartItems', JSON.stringify(this.cartItems));
+                }
+            }))
+        });
+    </script>
+</body>
+</html>
